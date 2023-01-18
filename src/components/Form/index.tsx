@@ -1,7 +1,6 @@
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Button from "@mui/material/Button";
 
 import Result from "../Result";
 import { ContainerBox, InputBox } from "./styles";
@@ -15,13 +14,23 @@ const SimulationForm = () => {
       .number()
       .typeError("Campo obrigatório")
       .integer()
-      .moreThan(999, "Valor precisa ser maior ou igual a 1000"),
+      .lessThan(
+        100000001,
+        "Valor precisa ser menor ou igual a R$ 100.000.000,00"
+      )
+      .moreThan(999, "Valor precisa ser maior ou igual a R$ 1.000,00"),
     installments: yup
       .number()
       .typeError("Campo obrigatório")
       .integer()
-      .lessThan(13, "Máximo de 12 parcelas"),
-    mdr: yup.number().typeError("Campo obrigatório").integer(),
+      .max(12, "Máximo de 12 parcelas")
+      .min(1, "Mínimo de 1 parcela"),
+    mdr: yup
+      .number()
+      .typeError("Campo obrigatório")
+      .integer()
+      .lessThan(101, "Percentual precisa ser menor ou igual a 100%")
+      .min(1, "Percentual precisa ser maior que 0%"),
     days: yup
       .array()
       .of(yup.number())
@@ -33,34 +42,39 @@ const SimulationForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<ITransaction>({
+    shouldFocusError: false,
     resolver: yupResolver(schema),
   });
 
   return (
     <ContainerBox>
-      <form onSubmit={handleSubmit(simulateAnticipation)}>
+      <form onChange={handleSubmit(simulateAnticipation)}>
         <h2>Simule sua Antecipação</h2>
 
         <InputBox>
-          <label htmlFor="amount">Informe o valor da venda *</label>
+          <label>Informe o valor da venda *</label>
           <input id="amount" type="text" {...register("amount")} />
           <p>{errors.amount?.message}</p>
         </InputBox>
 
         <InputBox>
-          <label htmlFor="installments">Em quantas parcelas *</label>
-          <input id="installments" type="text" {...register("installments")} />
+          <label>Em quantas parcelas *</label>
+          <input
+            id="installments"
+            type="number"
+            {...register("installments")}
+          />
           <p>{errors.installments?.message}</p>
         </InputBox>
 
         <InputBox>
-          <label htmlFor="mdr">Informe o percentual de MDR *</label>
-          <input id="mdr" type="text" {...register("mdr")} />
+          <label>Informe o percentual de MDR *</label>
+          <input id="mdr" type="number" {...register("mdr")} />
           <p>{errors.mdr?.message}</p>
         </InputBox>
 
         <InputBox>
-          <label htmlFor="days">Informe os dias</label>
+          <label>Informe os dias</label>
           <input
             id="days"
             type="text"
@@ -69,10 +83,6 @@ const SimulationForm = () => {
           />
           <p>{errors.days?.message}</p>
         </InputBox>
-
-        <Button type="submit" variant="contained">
-          Calcular
-        </Button>
       </form>
 
       <Result />

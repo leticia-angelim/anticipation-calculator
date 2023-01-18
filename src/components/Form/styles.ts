@@ -22,16 +22,6 @@ export const ContainerBox = styled.div`
       font-size: 25px;
       font-weight: 800;
     }
-
-    button {
-      width: 150px;
-      height: 40px;
-      margin-left: 4.5rem;
-
-      font-weight: 800;
-      font-size: 12px;
-      color: #f5f7fa;
-    }
   }
 `;
 
@@ -68,6 +58,6 @@ export const InputBox = styled.div`
   p {
     font-size: 11px;
     line-height: 13px;
-    color: var(--negative);
+    color: #cecece;
   }
 `;
